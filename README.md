@@ -1,8 +1,7 @@
-# relp-input-plugin
-Plugin for TCP input to fluentd using RELP
+# RELP input plugin
 
-for the time being this is simple "Hello world" fluentd input plugin
-which receives anything over TCP and passes it to fluentd AS-IS, with 
-no processing, filtering or parsing whatsoever.
+Plugin for input to fluentd using [RELP protocol](http://www.rsyslog.com/doc/relp.html)
 
-Will update this README once more functionality is added.
+this depends on `relp` ruby gem which host server-side ruby implementation
+
+
