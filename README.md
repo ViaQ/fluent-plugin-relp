@@ -39,10 +39,9 @@ sent by rsyslog's `omrelp` module, example of setting up (/etc/rsyslog.conf file
 ```aconf 
 module(load="omrelp")
 
-*.* (action="omrelp", 
+*.* action(type="omrelp" 
 	Target="your_fluentd_host_or_ip" 
-	Port="5170_or_yours_set" 
-	Protocol="tcp")
+	Port="5170_or_yours_set")
 ```
 make sure you have librelp and rsyslog relp plugin present on your system.
 

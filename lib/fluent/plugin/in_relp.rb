@@ -23,7 +23,7 @@ module Fluent
 
     def shutdown
 	super
-	@server.server_shut_down
+	@server.server_shutdown
         @thread.join
     end
 
