@@ -2,7 +2,7 @@
 
 Plugin for input to fluentd using [RELP protocol](http://www.rsyslog.com/doc/relp.html)
 
-this depends on `relp` ruby gem which host server-side ruby implementation
+this depends on `relp` ruby gem which host server-side ruby implementation, available [here](https://github.com/ViaQ/Relp).
 
 ## Installation
 
@@ -52,8 +52,8 @@ That is all you need to reliably send system logs to remote fluentd instance.
 
 ## Contributing
 
+Before filing a bug check whether you are using latest version AND latest version of [Relp library](https://github.com/ViaQ/Relp).
 Bug reports and pull requests are welcome on GitHub at https://github.com/ViaQ/fluent-plugin-relp.
-
 
 ## License
 
