@@ -36,7 +36,8 @@ module Fluent
 
     def on_message(msg)
 	  time = Engine.now
-	  router.emit(@tag, time, msg.dump)
+	  record = {"message"=> msg}
+	  router.emit(@tag, time, record)
       rescue => e
         log.error msg.dump, error: e, error_class: e.class
         log.error_backtrace
