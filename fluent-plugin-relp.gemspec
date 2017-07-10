@@ -16,6 +16,7 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = '>= 2.0.0'
 
   gem.add_development_dependency 'rake', '~> 0'
+  gem.add_development_dependency 'test-unit', '~> 3.1.0'
   gem.add_runtime_dependency 'fluentd', '~> 0.12.0'
   gem.add_runtime_dependency 'relp', '~> 0.1'
 end
