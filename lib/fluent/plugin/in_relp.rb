@@ -17,6 +17,7 @@ module Fluent
     end
 
     def start
+	super
 	@server = Relp::RelpServer.new(@bind, @port, log, method(:on_message))
         @thread = Thread.new(&method(:run))
     end

@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 Gem::Specification.new do |gem|
   gem.name        = 'fluent-plugin-relp'
-  gem.version     = '0.1.2'
+  gem.version     = '0.1.3'
   gem.author      = "Jiří Vymazal"
   gem.email       = ['jvymazal@redhat.com']
   gem.summary     = "Fluent plugin to receive messages via RELP"

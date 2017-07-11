@@ -18,6 +18,8 @@ Or install it yourself as:
 
 just note that you will probably need ruby development libraries installed to do this.
 
+You can also install through `bundler` and use `rake test` to run unit tests for plugin. 
+
 ## Usage
 
 To use the plugin just add tou your fluent.conf file:
