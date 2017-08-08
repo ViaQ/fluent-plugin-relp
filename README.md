@@ -6,7 +6,7 @@ this depends on `relp` ruby gem which host server-side ruby implementation, avai
 
 [![Gem Version](https://badge.fury.io/rb/fluent-plugin-relp.png)](http://badge.fury.io/rb/fluent-plugin-relp)
 [![Build Status](https://travis-ci.org/ViaQ/fluent-plugin-relp.png?branch=master)](https://travis-ci.org/ViaQ/fluent-plugin-relp)
-[![Coverage Status](https://coveralls.io/repos/github/ViaQ/Relp/badge.svg)](https://coveralls.io/github/ViaQ/Relp)
+[![Coverage Status](https://coveralls.io/repos/github/ViaQ/fluent-plugin-relp/badge.svg?branch=master)](https://coveralls.io/github/ViaQ/fluent-plugin-relp?branch=master)
 
 ## Installation
 
