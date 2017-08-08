@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.1.4] - 2017-08-08
+### Added
+- code coverage testing
+- now depends on [simplecov](https://github.com/colszowka/simplecov)
+- first iteration of travis CI
+- Gem, build and coverages badges to README
+
 ## [0.1.3] - 2017-07-11
 ### Added
 - unit tests suite
