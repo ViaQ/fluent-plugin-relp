@@ -33,6 +33,7 @@ class RelpInputTest < Test::Unit::TestCase
     bind       		HOST
     port		1111
     tag                 input.relp
+    ssl_config          ./cert.pem:./key.pem:./ca.pem
   ]
 
   def create_driver(conf = CONFIG)
