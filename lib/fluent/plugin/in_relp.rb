@@ -11,6 +11,8 @@ module Fluent
     config_param :port, :integer, default: 5170
     desc 'The bind address to listen to.'
     config_param :bind, :string, default: '0.0.0.0'
+    desc 'SSL configuration string, format "certificate_path":"key_path":"certificate_authority_path"'
+    config_param :ssl_config, :string, default: nil
 
     def configure(conf)
         super
@@ -18,7 +20,15 @@ module Fluent
 
     def start
 	super
-	@server = Relp::RelpServer.new(@bind, @port, log, method(:on_message))
+	ssl_context = nil
+	if @ssl_config != nil
+		ssl_context = OpenSSL::SSL::SSLContext.new(:TLSv1_2)
+		ssl_context.ca_file = @ssl_config.split(':')[2]
+		ssl_context.verify_mode = OpenSSL::SSL::VERIFY_PEER
+		ssl_context.key = OpenSSL::PKey::RSA.new(File.open(@ssl_config.split(':')[1]))
+		ssl_context.cert = OpenSSL::X509::Certificate.new(File.open(@ssl_config.split(':')[0]))
+	end
+	@server = Relp::RelpServer.new(@port, method(:on_message), @bind, ssl_context, log)
         @thread = Thread.new(&method(:run))
     end
 

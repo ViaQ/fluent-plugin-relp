@@ -36,6 +36,8 @@ To use the plugin just add tou your fluent.conf file:
   tag your_tag_for_relp
   #optionally, determine remote IP to bind to, by default binds to all incoming connections
   bind XX.XX.XX.XX
+  #if you want to use TLS encryption, specify this config string
+  ssl_config certificate_path:key_path:certificate_authority_path
 </source>
 
 ```
