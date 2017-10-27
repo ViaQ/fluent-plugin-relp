@@ -1,5 +1,7 @@
 require 'fluent/input'
+require 'fluent/plugin/relp/version'
 require 'relp'
+require 'relp/version'
 
 module Fluent
   class RelpInput < Input
@@ -11,7 +13,7 @@ module Fluent
     config_param :port, :integer, default: 5170
     desc 'The bind address to listen to.'
     config_param :bind, :string, default: '0.0.0.0'
-    desc 'SSL configuration string, format "certificate_path":"key_path":"certificate_authority_path"'
+    desc 'SSL configuration string, format certificate_path:key_path:certificate_authority_path'
     config_param :ssl_config, :string, default: nil
 
     def configure(conf)
@@ -28,6 +30,7 @@ module Fluent
 		ssl_context.key = OpenSSL::PKey::RSA.new(File.open(@ssl_config.split(':')[1]))
 		ssl_context.cert = OpenSSL::X509::Certificate.new(File.open(@ssl_config.split(':')[0]))
 	end
+	log.info "config complete, RELP plugin:'v", RelpPlugin::VERSION, "' with RELP lib:'v", Relp::VERSION, "' starting..."
 	@server = Relp::RelpServer.new(@port, method(:on_message), @bind, ssl_context, log)
         @thread = Thread.new(&method(:run))
     end
@@ -55,4 +58,3 @@ module Fluent
     end
   end
 end
-
