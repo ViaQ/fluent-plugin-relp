@@ -23,6 +23,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'test-unit', '~> 3.1'
   gem.add_development_dependency 'simplecov', '~> 0'
   gem.add_development_dependency 'coveralls', '~> 0'
-  gem.add_runtime_dependency 'fluentd', '~> 0.12.0'
+  gem.add_runtime_dependency 'fluentd', '>= 0.12.0', '< 2.0'
   gem.add_runtime_dependency 'relp', '~> 0.2'
 end
