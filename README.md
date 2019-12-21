@@ -22,7 +22,7 @@ Or install it yourself as:
 
 just note that you will probably need ruby development libraries installed to do this.
 
-You can also install through `bundler` and use `rake test` to run unit tests for plugin. 
+You can also install through `bundler` and use `rake test` to run unit tests for plugin.
 
 ## Usage
 
@@ -32,31 +32,39 @@ To use the plugin just add tou your fluent.conf file:
   @type relp
   #optionally, specify port on which to start relp server, defaults to 5170
   port XXXX
-  #optionally, specify a tag with which to mark messages received over this connection 
+  #optionally, specify a tag with which to mark messages received over this connection
   tag your_tag_for_relp
   #optionally, determine remote IP to bind to, by default binds to all incoming connections
   bind XX.XX.XX.XX
-  #if you want to use TLS encryption, specify this config string
-  ssl_config /path_to/certificate_file:/path_to/key_file:/path_to/certificate_authority_file
+  #if you want to use TLS encryption specify this
+  <ssl_cert>
+    cert /path_to/certificate_file
+    key /path_to/key_file
+    <extra_cert>
+      cert /path_to/chain_file
+    </extra_cert>
+  </ssl_cert>
+  #if you need a CA file to verify clients specify this
+  ssl_ca_file /path_to/certificate_authority_file
 </source>
 
 ```
 With the above set up your fluentd is ready to accept messages transported by RELP, for example logs
 sent by rsyslog's `omrelp` module, example of setting up (/etc/rsyslog.conf file):
 
-```aconf 
+```aconf
 module(load="omrelp")
 
-*.* action(type="omrelp" 
-	Target="your_fluentd_host_or_ip" 
+*.* action(type="omrelp"
+	Target="your_fluentd_host_or_ip"
 	Port="5170_or_yours_set"
-#	Add below part to use SSL encryption
+	# Add below part to use SSL encryption
 	tls="on"
-	tls.permittedPeer="SHA1:hash_of_your_certificate_file"
-	tls.authMode="fingerprint"
-	tls.mycert="/path_to/certificate_file"
-	tls.myprivkey="/path_to/key_file"
-	tls.cacert="/path_to/certificate_authority_file"
+	tls.permittedPeer="your_fluentd_host"
+	tls.authMode="name"
+	tls.mycert="/path_to/syslog_host_certificate_file"
+	tls.myprivkey="/path_to/syslog_host_key_file"
+	tls.cacert="/path_to/certificate_authority_file_for_fluentd_host"
 	)
 ```
 make sure you have librelp and rsyslog relp plugin present on your system.
