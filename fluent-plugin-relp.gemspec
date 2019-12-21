@@ -3,8 +3,8 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'fluent/plugin/relp/version'
 
 Gem::Specification.new do |gem|
-  gem.name 	  = 'fluent-plugin-relp'
-  gem.version 	  = Fluent::RelpPlugin::VERSION
+  gem.name        = 'fluent-plugin-relp'
+  gem.version     = Fluent::RelpPlugin::VERSION
   gem.author      = 'Jiří Vymazal'
   gem.email       = ['jvymazal@redhat.com']
   gem.summary     = 'Fluent plugin to receive messages via RELP'
