@@ -31,7 +31,7 @@ class RelpInputTest < Test::Unit::TestCase
 
   CONFIG = %(
     bind                HOST
-    port		            1111
+    port                1111
     tag                 input.relp
     <ssl_cert>
       cert              cert.pem
@@ -66,7 +66,7 @@ class RelpInputTest < Test::Unit::TestCase
     def test_configure_complex
       conf = %(
         bind                HOST
-        port		            1111
+        port                1111
         tag                 input.relp
         <ssl_cert>
           cert              cert.pem
@@ -98,8 +98,8 @@ class RelpInputTest < Test::Unit::TestCase
 
     def test_configure_legacy
       conf = %(
-        bind       		HOST
-        port		1111
+        bind                HOST
+        port                1111
         tag                 input.relp
         ssl_config          ./cert.pem:./key.pem:./ca.pem
       )
