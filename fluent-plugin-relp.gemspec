@@ -16,10 +16,10 @@ Gem::Specification.new do |gem|
   gem.test_files    = Dir['{test}/**/*']
   gem.require_paths = ['lib']
 
-  gem.required_ruby_version = '>= 2.3.0'
+  gem.required_ruby_version = '>= 2.5'
 
   gem.add_development_dependency 'coveralls', '~> 0'
-  gem.add_development_dependency 'rake', '~> 0'
+  gem.add_development_dependency 'rake', '>= 10'
   gem.add_development_dependency 'simplecov', '~> 0'
   gem.add_development_dependency 'test-unit', '~> 3.1'
   gem.add_runtime_dependency 'fluentd', '~> 1'
