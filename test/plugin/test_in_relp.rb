@@ -21,7 +21,13 @@ class RelpServerFake
   attr_reader :shut_down
 end
 
-class JoinException < RuntimeError
+class JoinTestThread < Thread
+  @joined = false
+  attr_accessor :joined
+  def join
+    super
+    @joined = true
+  end
 end
 
 class RelpInputTest < Test::Unit::TestCase
@@ -29,44 +35,88 @@ class RelpInputTest < Test::Unit::TestCase
     Fluent::Test.setup
   end
 
-  CONFIG = %[
-    bind       		HOST
-    port		1111
+  CONFIG = %(
+    bind                localhost
+    port                1111
     tag                 input.relp
-    ssl_config          ./cert.pem:./key.pem:./ca.pem
-  ]
+    <ssl_cert>
+      cert              test/server.pem
+      key               test/server.key
+    </ssl_cert>
+    ssl_ca_file         ca.pem
+  )
 
   def create_driver(conf = CONFIG)
-    File.open("cert.pem", "w")
-    File.open("key.pem", "w")
-    File.open("ca.pem", "w")
-    Fluent::Test::InputTestDriver.new(Fluent::RelpInput).configure(conf)
+    d = Fluent::Test::InputTestDriver.new(Fluent::RelpInput)
+    d.configure(conf)
+    return d
   end
 
-  sub_test_case "config" do
+  sub_test_case 'config' do
     def test_empty
-      assert_raise(Fluent::ConfigError) {
+      assert_raise(Fluent::ConfigError) do
         create_driver('')
-      }
+      end
     end
 
     def test_configure
       d = create_driver
-      assert_equal 'HOST', d.instance.bind
+      assert_equal 'localhost', d.instance.bind
       assert_equal 1111, d.instance.port
       assert_equal 'input.relp', d.instance.tag
-      assert_equal './cert.pem:./key.pem:./ca.pem', d.instance.ssl_config
+      assert_equal 'test/server.pem', d.instance.ssl_certs[0].cert
+      assert_equal 'test/server.key', d.instance.ssl_certs[0].key
+    end
+
+    def test_configure_complex
+      conf = %(
+        bind                localhost
+        port                1111
+        tag                 input.relp
+        <ssl_cert>
+          cert              test/server.pem
+          key               test/server.key
+          <extra_cert>
+            cert            test/ca.pem
+          </extra_cert>
+          <extra_cert>
+            cert            test/ca.pem
+          </extra_cert>
+        </ssl_cert>
+        <ssl_cert>
+          cert              test/server.pem
+          key               test/server.key
+        </ssl_cert>
+        ssl_ca_file         test/ca.pem
+      )
+      d = create_driver(conf)
+      assert_equal 'localhost', d.instance.bind
+      assert_equal 1111, d.instance.port
+      assert_equal 'input.relp', d.instance.tag
+      assert_equal 'test/server.pem', d.instance.ssl_certs[0].cert
+      assert_equal 'test/server.key', d.instance.ssl_certs[0].key
+      assert_equal 'test/ca.pem', d.instance.ssl_certs[0].extra_certs[0].cert
+      assert_equal 'test/ca.pem', d.instance.ssl_certs[0].extra_certs[1].cert
+      assert_equal 'test/server.pem', d.instance.ssl_certs[1].cert
+      assert_equal 'test/server.key', d.instance.ssl_certs[1].key
+    end
+
+    def test_configure_legacy
+      conf = %(
+        bind                localhost
+        port                1111
+        tag                 input.relp
+        ssl_config          test/server.pem:test/server.key:test/ca.pem
+      )
+      d = create_driver(conf)
+      assert_equal 'localhost', d.instance.bind
+      assert_equal 1111, d.instance.port
+      assert_equal 'input.relp', d.instance.tag
+      assert_equal 'test/server.pem:test/server.key:test/ca.pem', d.instance.ssl_config
     end
   end
 
-  sub_test_case "function" do
-    def test_run_invalid
-      d = create_driver
-      assert_raise(OpenSSL::PKey::RSAError) { #will fail because of no valid cert
-	d.run
-      }
-    end
-
+  sub_test_case 'function' do
     def test_run
       d = create_driver
       server = RelpServerFake.new(d.instance.method(:on_message))
@@ -78,29 +128,26 @@ class RelpInputTest < Test::Unit::TestCase
     def test_message
       d = create_driver
       server = RelpServerFake.new(d.instance.method(:on_message))
-      assert_raise(OpenSSL::PKey::RSAError) { #will fail because of no valid cert
-	d.run
-      }
+      d.run
       d.instance.instance_variable_set(:@server, server)
       d.instance.run
       message = 'testLog'
       server.send(message)
-      assert_equal true, d.emit_streams.count > 0
-      assert_equal d.emit_streams[0][0], 'input.relp' #[0][0] indicates tag of first accepted message
-      assert_equal d.emit_streams[0][1][0][1]["message"], message #this is how you access first accepted record... blame fluentd test framework
+      assert_equal true, d.emit_streams.count.positive?
+      assert_equal d.emit_streams[0][0], 'input.relp' # [0][0] indicates tag of first accepted message
+      assert_equal d.emit_streams[0][1][0][1]['message'], message # this is how you access first accepted record... blame fluentd test framework
     end
   end
 
-  sub_test_case "cleanup" do
+  sub_test_case 'cleanup' do
     def test_shutdown
       d = create_driver
       server = RelpServerFake.new(d.instance.method(:on_message))
       d.instance.instance_variable_set(:@server, server)
-      plugin_thread = Thread.new { raise JoinException }
+      plugin_thread = JoinTestThread.new {}
       d.instance.instance_variable_set(:@thread, plugin_thread)
-      assert_raise(JoinException) {
-	d.instance.shutdown
-      }
+      d.instance.shutdown
+      assert_equal true, plugin_thread.joined
       assert_equal true, server.shut_down
     end
   end
