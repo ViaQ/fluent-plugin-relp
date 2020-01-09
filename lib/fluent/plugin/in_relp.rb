@@ -76,12 +76,11 @@ module Fluent
     rescue StandardError => e
       log.error 'unexpected error', error: e, error_class: e.class
       log.error_backtrace
-      retry
     end
 
-    def on_message(msg)
+    def on_message(msg, peer)
       time = Engine.now
-      record = { 'message' => msg }
+      record = { 'message' => msg.chomp, 'peer' => peer }
       router.emit(@tag, time, record)
     rescue StandardError => e
       log.error msg.dump, error: e, error_class: e.class
