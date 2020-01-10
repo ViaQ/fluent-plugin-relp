@@ -11,8 +11,8 @@ class RelpServerFake
   end
   attr_reader :run_invoked
 
-  def send(msg)
-    @callback.call(msg)
+  def send(msg, peer)
+    @callback.call(msg, peer)
   end
 
   def server_shutdown
@@ -73,6 +73,7 @@ class RelpInputTest < Test::Unit::TestCase
         bind                localhost
         port                1111
         tag                 input.relp
+        peer_field          foo
         <ssl_cert>
           cert              test/server.pem
           key               test/server.key
@@ -93,26 +94,13 @@ class RelpInputTest < Test::Unit::TestCase
       assert_equal 'localhost', d.instance.bind
       assert_equal 1111, d.instance.port
       assert_equal 'input.relp', d.instance.tag
+      assert_equal 'foo', d.instance.peer_field
       assert_equal 'test/server.pem', d.instance.ssl_certs[0].cert
       assert_equal 'test/server.key', d.instance.ssl_certs[0].key
       assert_equal 'test/ca.pem', d.instance.ssl_certs[0].extra_certs[0].cert
       assert_equal 'test/ca.pem', d.instance.ssl_certs[0].extra_certs[1].cert
       assert_equal 'test/server.pem', d.instance.ssl_certs[1].cert
       assert_equal 'test/server.key', d.instance.ssl_certs[1].key
-    end
-
-    def test_configure_legacy
-      conf = %(
-        bind                localhost
-        port                1111
-        tag                 input.relp
-        ssl_config          test/server.pem:test/server.key:test/ca.pem
-      )
-      d = create_driver(conf)
-      assert_equal 'localhost', d.instance.bind
-      assert_equal 1111, d.instance.port
-      assert_equal 'input.relp', d.instance.tag
-      assert_equal 'test/server.pem:test/server.key:test/ca.pem', d.instance.ssl_config
     end
   end
 
@@ -132,10 +120,12 @@ class RelpInputTest < Test::Unit::TestCase
       d.instance.instance_variable_set(:@server, server)
       d.instance.run
       message = 'testLog'
-      server.send(message)
+      peer = 'testPeer'
+      server.send(message, peer)
       assert_equal true, d.emit_streams.count.positive?
       assert_equal d.emit_streams[0][0], 'input.relp' # [0][0] indicates tag of first accepted message
       assert_equal d.emit_streams[0][1][0][1]['message'], message # this is how you access first accepted record... blame fluentd test framework
+      assert_equal d.emit_streams[0][1][0][1]['peer'], peer # this is how you access first accepted record... blame fluentd test framework
     end
   end
 
