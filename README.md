@@ -34,6 +34,8 @@ To use the plugin just add tou your fluent.conf file:
   port XXXX
   #optionally, specify a tag with which to mark messages received over this connection
   tag your_tag_for_relp
+  #optionally, specify a field name to record relp peer information
+  peer_field your_field_for_relp_peer_infomation
   #optionally, determine remote IP to bind to, by default binds to all incoming connections
   bind XX.XX.XX.XX
   #if you want to use TLS encryption specify this

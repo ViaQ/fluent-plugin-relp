@@ -9,12 +9,12 @@ module Fluent
 
     desc 'Tag of output events.'
     config_param :tag, :string
+    desc 'Specify the record field to store peer information'
+    config_param :peer_field, :string, default: 'peer'.freeze
     desc 'The port to listen to.'
     config_param :port, :integer, default: 5170
     desc 'The bind address to listen to.'
     config_param :bind, :string, default: '0.0.0.0'
-    desc 'SSL configuration string, format certificate_path:key_path:certificate_authority_path'
-    config_param :ssl_config, :string, default: nil, deprecated: 'Use ssl_cert and ssl_ca_file instead'
 
     config_section :ssl_cert, param_name: :ssl_certs, multi: true, required: false do
       desc 'Path to server SSL cert'
@@ -33,15 +33,8 @@ module Fluent
 
     def configure(conf)
       super
-      if !@ssl_config.nil? || !@ssl_certs.empty? || !@ssl_ca_file.nil?
+      if !@ssl_certs.empty? || !@ssl_ca_file.nil?
         @ssl_context = OpenSSL::SSL::SSLContext.new(:TLSv1_2)
-      end
-      unless @ssl_config.nil?
-        @ssl_context.ca_file = @ssl_config.split(':')[2]
-        @ssl_context.verify_mode = OpenSSL::SSL::VERIFY_PEER
-        key = OpenSSL::PKey::RSA.new(File.open(@ssl_config.split(':')[1]))
-        cert = OpenSSL::X509::Certificate.new(File.open(@ssl_config.split(':')[0]))
-        @ssl_context.add_certificate(cert, key)
       end
       @ssl_certs.each do |ssl_cert|
         cert = OpenSSL::X509::Certificate.new(File.open(ssl_cert.cert))
@@ -80,7 +73,7 @@ module Fluent
 
     def on_message(msg, peer)
       time = Engine.now
-      record = { 'message' => msg.chomp, 'peer' => peer }
+      record = { 'message' => msg.chomp, @peer_field => peer }
       router.emit(@tag, time, record)
     rescue StandardError => e
       log.error msg.dump, error: e, error_class: e.class
